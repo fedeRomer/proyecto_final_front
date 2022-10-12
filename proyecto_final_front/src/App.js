@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import Logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-ro
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap'
 import axios from 'axios';
 import Cookies from 'js-cookie'
-import Logo from './img/icons/police.png'
+//import Logo from './img/icons/police.png'
 
 
 import LoginForm from './components/user/login/LoginForm';
@@ -14,6 +14,7 @@ import Dashboard from './components/user/dashboard/Dashboard';
 import Home from './components/home/Home';
 
 import RegisterNewUser from './components/user/register/RegisterNewUser';
+import Choferes from './components/choferes/Choferes';
 
 import PrivateRoutes from './utils/PrivateRoutes';
 import PublicRoute from './utils/PublicRoute';
@@ -54,8 +55,10 @@ function App() {
               navbarScroll
             >
               <Nav.Link as={Link} to="/home">Inicio</Nav.Link>
+              <Nav.Link as={Link} to="/login">Login</Nav.Link> {/* <small style={{ color: 'red' }}>(Acceso sin token)</small> */}
               <Nav.Link activeclassname="active" as={Link} to="/dashboard">Panel Usuarios</Nav.Link> {/* <small style={{ color: 'red' }}>(Acceso con token unicamente)</small> */}
               <Nav.Link activeclassname="active" as={Link} to="/usuarios">Usuarios (Login)</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/choferes">Choferes (Login)</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -67,6 +70,7 @@ function App() {
           <PublicRoute path="/login" component={LoginForm} />
           <PrivateRoutes path="/dashboard" component={Dashboard} />
           <PrivateRoutes path="/usuarios" component={RegisterNewUser}/>
+          <PrivateRoutes path="/choferes" component={Choferes}/>
         </Switch>
         
       </div>
