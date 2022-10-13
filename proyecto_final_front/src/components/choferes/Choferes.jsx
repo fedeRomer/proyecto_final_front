@@ -1,369 +1,430 @@
-import React, {useState, useEffect} from "react";
+//https://reactshowcase.com/black-dashboard-react
+
+import React, { useState, useEffect} from "react";
 import MaterialTable from "material-table";
-import CustomDatePicker from '../customdatepicker/CustomDatePicker';
+import Tabs from 'react-bootstrap/Tabs'
+import Tab from 'react-bootstrap/Tab'
+import Sonnet from 'react-bootstrap/TabContent'
+import Button from 'react-bootstrap/Button'
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker, DateTimePicker } from '@material-ui/pickers';
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
-export default function Choferes(){
 
+
+
+
+
+function Choferes() {
+    const [fromDate, setFromDate] = useState(new Date());
+    const [toDate, setToDate] = useState(new Date());
+    const [today, setToday] = useState(new Date());
+    const [tipo, setTipo] = useState('');
+    const [dataGeneric, setDataGeneric] = useState([])
     
 
-    useEffect(() => {
-
-
-        fetch("http://localhost:8080/api/visitante/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setData(response)
-        })
-
-        fetch("http://localhost:8080/api/visitantevehiculo/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setDataVehiculo(response)
-        })
-        
-    }, [])
     
-    function refreshTable() {
+    const columnsSos = [
+        { title: "ID", field: "id", editable: false, hidden: true },
+        { title: "Tipo", field: "tipo", editable: false },
+        { title: "Unidad Funcional", field: "unidadFuncional",editable: false },
+        { title: "Activa", field: "isactive",type: Boolean}
+      ]
 
-      fetch("http://localhost:8080/api/visitante/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setData(response)
-        })
-
-
-        fetch("http://localhost:8080/api/visitantevehiculo/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setDataVehiculo(response)
-        })
-
-
-    
-  }
-
-  
-      const [data, setData] = useState([])
-      const columns = [
+    const columnsExpensas = [
         { title: "ID", field: "id", editable: false },
-        { title: "Nombre", field: "nombre",initialEditValue:'', validate: rowData => rowData.nombre === '' ? { isValid: false, helperText: 'nombre no puede ser vacio' } : true,},
-        { title: "Apellido", field: "apellido",initialEditValue:'', validate: rowData => rowData.apellido === '' ? { isValid: false, helperText: 'apellido no puede ser vacio' } : true,},
-        { title: "Fecha de entrada", field: 'fechaEntrada',type:'datetime',initialEditValue: new Date(),validate: rowData => rowData.fechaEntrada > new Date(),filterComponent: (props) => <CustomDatePicker {...props} /> },
-        { title: "Fecha de salida", field: "fechaSalida",type:'datetime',validate: rowData => rowData.fechaSalida >= rowData.fechaEntrada,filterComponent: (props) => <CustomDatePicker {...props} /> },
-        { title: "DNI", field: 'dni',type: "numeric",validate: rowData =>  rowData.dni > 1000000 && rowData.dni < 99999999},
-        { title: "UF ID", field: 'unidadFuncionalId',type:'numeric', validate: rowData => rowData.unidadFuncionalId > 0 && rowData.unidadFuncionalId < 10000 },
+        { title: "Titulo", field: "titulo",initialEditValue:'', validate: rowData => rowData.titulo === '' ? { isValid: false, helperText: 'titulo no puede ser vacio' } : true,},
+        // { title: "Tipo", field: "tipo",initialEditValue:'', validate: rowData => rowData.tipo === '' ? { isValid: false, helperText: 'Tipo no puede ser vacio' } : true,},
         {
           title: 'Tipo',
-          field: 'tipo',initialEditValue:'Otro',
+          field: 'tipo',
           validate: rowData => rowData.tipo === '' ? { isValid: false, helperText: 'Tipo no puede ser vacio' } : true,
-          lookup: { 'Visita Domiciliaria': 'Visita Domiciliaria', 'Mantenimiento y Reparación': 'Mantenimiento y Reparación'
-          , 'Construcción': 'Construcción', 'Servicios': 'Servicios', 'Otro': 'Otro'},
+          lookup: { 'Vencimiento': 'Vencimiento', 'Nueva': 'Nueva', 'Info': 'Info'},
         },
+        { title: "Detalle", field: 'detalle',initialEditValue:'', validate: rowData => rowData.detalle === '' ? { isValid: false, helperText: 'detalle no puede ser vacio' } : true,},
+        { title: "Monto total", field: "montoTotal",type: "currency", validate: rowData => rowData.montoTotal >= 0   },
+        { title: "Unidad Funcional", field: 'unidadFuncionalId', type: "numeric", validate: rowData => rowData.unidadFuncionalId > 0 },
+        { title: "Propietario ID", field: 'propietarioId',type: "numeric", validate: rowData => rowData.propietarioId > 0  },
+        { title: "Visto", field: 'visto',type:'boolean' }
+      ]
+
+    const columnsMulta = [
+        { title: "ID", field: "id", editable: false },
+        { title: "Titulo", field: "titulo",initialEditValue:'', validate: rowData => rowData.titulo === '' ? { isValid: false, helperText: 'titulo no puede ser vacio' } : true,},
+        // { title: "Tipo", field: "tipo",initialEditValue:'', validate: rowData => rowData.tipo === '' ? { isValid: false, helperText: 'tipo no puede ser vacio' } : true,},
+        {
+          title: 'Tipo',
+          field: 'tipo',
+          validate: rowData => rowData.tipo === '' ? { isValid: false, helperText: 'Tipo no puede ser vacio' } : true,
+          lookup: { 'Vencimiento': 'Vencimiento', 'Nueva': 'Nueva', 'Info': 'Info'},
+        },
+        { title: "Detalle", field: 'detalle' },
+        { title: "Monto total", field: "montoTotal",type: "currency", validate: rowData => rowData.montoTotal >= 0   },
+        { title: "Unidad Funcional", field: 'unidadFuncionalId', type: "numeric", validate: rowData => rowData.unidadFuncionalId > 0 },
+        { title: "Propietario ID", field: 'propietarioId',type: "numeric", validate: rowData => rowData.propietarioId > 0  }      
+      ]
+
+    const columnsVisitas = [
+        { title: "ID", field: "id", editable: false },
+        { title: "Nombre", field: "nombre"},
+        { title: "Apellido", field: "apellido"},
+        { title: "Fecha de entrada", field: 'fechaEntrada',type:'datetime'},
+        { title: "Fecha de salida", field: "fechaSalida",type:'datetime'},
+        { title: "DNI", field: 'dni',type: "numeric"},
+        { title: "UF ID", field: 'unidadFuncionalId',type:'numeric'},
+        { title: 'Tipo', field: 'tipo'}
+        
         //{ title: "Foto", field: 'foto' }
       ]
 
-      const [datavehiculo, setDataVehiculo] = useState([])
-      const columnsvehiculo = [
+      
+      const columnsVehiculoVisitas = [
         { title: "ID", field: "id", editable: false },
-        { title: "Patente", field: "patente",initialEditValue:'', validate: rowData => rowData.patente === '' ? { isValid: false, helperText: 'patente no puede ser vacio' } : true,},
-        { title: "Fecha Vencimiento Poliza", field: "fechaVencimientoPoliza",type:'datetime',validate: rowData => rowData.fechaVencimientoPoliza > new Date(),helperText: 'No se pueden ingresar vehiculos con poliza vencida'  ,filterComponent: (props) => <CustomDatePicker {...props} />},
-        { title: "DNI", field: 'dniVisitanteOwner',type: "numeric", validate: rowData => rowData.dniVisitanteOwner > 1000000  && rowData.dniVisitanteOwner < 99999999},
-        { title: "ID Visitante", field: 'fkVisitanteOwner',type: "numeric", validate: rowData => rowData.fkVisitanteOwner > 0  }
+        { title: "Patente", field: "patente",initialEditValue:''},
+        { title: "Fecha Vencimiento Poliza", field: "fechaVencimientoPoliza",type:'datetime'},
+        { title: "DNI", field: 'dniVisitanteOwner',type: "numeric"},
+        { title: "ID Visitante", field: 'fkVisitanteOwner',type: "numeric"}
       ]
 
+    function handleCleanDateFilter() {
+        setFromDate(null)
+        setToDate(null)
+    }
 
-    
-    
-      return (
-        <div className="Visitas">
-          <div>
-          <MaterialTable
-            title="Visitas"
-            data={data}
-            columns={columns}
-            actions={[
-              {
-                icon: 'delete',
-                tooltip: 'Eliminar visita',
-                onClick: (event, rowData) => {
-                  console.log(rowData)
-                  if(window.confirm("¿Está seguro que quiere eliminar la visita : " + rowData.dni)){
+    function getData(type){
 
-                    fetch('http://localhost:8080/api/visitante/deletevisitante',{
-                      method:"DELETE",
-                      headers:{
-                        'Content-type':"application/json"
-                      },
-                      body:JSON.stringify(rowData)
-                    }).then(response=>response.json())
-                    .then(response=>{
-                      alert(response.response)
-                      console.log(response)
-                      refreshTable()
-                    }).catch((error) =>{
-                      console.log(error);
-                    })
-
-                  }
-                    
-                }
-              }
-            ]}
-            editable={{
-              onRowAdd: (newRow) => new Promise((resolve, reject) => {
-                setTimeout(() => {
-                fetch('http://localhost:8080/api/visitante/addvisitante',{
-                  method:"PUT",
-                  headers:{
-                    'Content-type':"application/json"
-                  },
-                  body:JSON.stringify(newRow)
-                }).then(response=>response.json())
-                .then(response=>{
-                  alert(response.response)
-                  console.log(response)
-                  refreshTable()
-                }).catch((error) =>{
-                  console.log(error);
-                  refreshTable()
-                })
-                resolve()
-              }, 500)}),
-              onRowUpdate:(updatedRow,oldRow)=>new Promise((resolve,reject)=>{
-                const index=oldRow.tableData.id;
-                const updatedRows=[...data]
-                updatedRows[index]=updatedRow
-                setTimeout(() => {
-  
-                  console.log(updatedRows);
-                  fetch('http://localhost:8080/api/visitante/updatevisitante',{
-                    method:"POST",
-                    headers:{
-                      'Content-type':"application/json"
-                    },
-                    body:JSON.stringify(updatedRow)
-                  }).then(response=>response.json())
-                  .then(response=>{
-                    alert(response.response)
-                    console.log(response)
-                    refreshTable()
-                  }).catch((error) =>{
-                    console.log(error);
-                  })
-                  resolve()
-                }, 500)
-              })
-    
-            }}
-            options={{
-              actionsColumnIndex: -1, addRowPosition: "first",
-              exportButton: true
-            }}
-            localization={{
-              pagination: {
-                  labelDisplayedRows: '{from}-{to} of {count}'
-              },
-              pagination: {
-                  labelRowsSelect: 'Filas'
-              },
-              toolbar: {
-                  nRowsSelected: '{0} fila(s) seleccionadas',
-                  searchPlaceholder: 'Buscar',
-                  exportTitle: 'Exportar',
-                  exportName: 'Exportar como',
-                  exportAriaLabel: 'Exportar como'
-              },
-              header: {
-                  actions: 'Acciones'
-              },
-              body: {
-                  emptyDataSourceMessage: 'No hay registros para mostrar',
-                  filterRow: {
-                      filterTooltip: 'Filtrar'
-                  },
-                  editRow: {
-                      deleteText: '¿Está seguro de eliminar este registro?'  
-                  },
-                  addTooltip: 'Añadir'
-              }
-          }}
-          />
-          </div>
-
-         <div>
-
-          <MaterialTable
-            title="Vehiculo Visitas (Dar de alta la visita previo al vehiculo)"
-            data={datavehiculo}
-            columns={columnsvehiculo}
-            actions={[
-              {
-                icon: 'delete',
-                tooltip: 'Eliminar vehiculo',
-                onClick: (event, rowData) => {
-                  console.log(rowData)
-                  if(window.confirm("¿Está seguro que quiere eliminar el vehiculo con la patente: " + rowData.patente)){
-
-                    fetch('http://localhost:8080/api/visitantevehiculo/deletevisitantevehiculo',{
-                      method:"DELETE",
-                      headers:{
-                        'Content-type':"application/json"
-                      },
-                      body:JSON.stringify(rowData)
-                    }).then(response=>response.json())
-                    .then(response=>{
-                      alert(response.response)
-                      console.log(response)
-                      refreshTable()
-                    }).catch((error) =>{
-                      console.log(error);
-                    })
-
-                    alert('confirmado')
-                  }else{
-
-                    alert('no confirmado')
-                  }
-                    
-                  
-                  
-
-                  
-                }
-              }
-            ]}
-            editable={{
-              onRowAdd: (newRowVehiculo) => new Promise((resolve, reject) => {
-                setTimeout(() => {
-                fetch('http://localhost:8080/api/visitantevehiculo/addvisitantevehiculo',{
-                  method:"PUT",
-                  headers:{
-                    'Content-type':"application/json"
-                  },
-                  body:JSON.stringify(newRowVehiculo)
-                }).then(response=>response.json())
-                .then(response=>{
-                  alert(response.response)
-                  console.log(response)
-                  refreshTable()
-                }).catch((error) =>{
-                  console.log(error);
-                })
-                resolve()
-              }, 500)}),
-              // onRowDelete: selectedRowDelete => new Promise((resolve, reject) => {
-              //   setTimeout(() => {
-  
-              //     fetch('http://localhost:8080/api/visitantevehiculo/deletevisitantevehiculo',{
-              //       method:"DELETE",
-              //       headers:{
-              //         'Content-type':"application/json"
-              //       },
-              //       body:JSON.stringify(selectedRowDelete)
-              //     }).then(response=>response.json())
-              //     .then(response=>{
-              //       alert(response.response)
-              //       console.log(response)
-              //       refreshTable()
-              //     }).catch((error) =>{
-              //       alert('Error no controlado')
-              //       console.log(error);
-              //     })
-              //     resolve()
-              //   }, 500)
-              // }),
-              onRowUpdate:(updatedRowVehiculo,oldRowVehiculo)=>new Promise((resolve,reject)=>{
-                const index=oldRowVehiculo.tableData.id;
-                const updatedRows=[...data]
-                updatedRows[index]=updatedRowVehiculo
-                setTimeout(() => {
-  
-                  console.log(updatedRows);
-                  fetch('http://localhost:8080/api/visitantevehiculo/updatevisitantevehiculo',{
-                    method:"POST",
-                    headers:{
-                      'Content-type':"application/json"
-                    },
-                    body:JSON.stringify(updatedRowVehiculo)
-                  }).then(response=>response.json())
-                  .then(response=>{
-                    alert(response.response)
-                    console.log(response)
-                    refreshTable()
-                  }).catch((error) =>{
-                    console.log(error);
-                  })
-                  resolve()
-                }, 500)
-              })
-    
-            }}
-            options={{
-              actionsColumnIndex: -1, addRowPosition: "first",
-              exportButton: true
-            }}
-            localization={{
-              pagination: {
-                  labelDisplayedRows: '{from}-{to} of {count}'
-              },
-              pagination: {
-                  labelRowsSelect: 'Filas'
-              },
-              toolbar: {
-                  nRowsSelected: '{0} fila(s) seleccionadas',
-                  searchPlaceholder: 'Buscar',
-                  exportTitle: 'Exportar',
-                  exportName: 'Exportar como',
-                  exportAriaLabel: 'Exportar como'
-              },
-              header: {
-                  actions: 'Acciones'
-              },
-              body: {
-                  emptyDataSourceMessage: 'No hay registros para mostrar',
-                  filterRow: {
-                      filterTooltip: 'Filtrar'
-                  },
-                  editRow: {
-                      deleteText: '¿Está seguro de eliminar este registro?'  
-                  },
-                  addTooltip: 'Añadir'
-              }
-          }}
-          />
-          </div> 
-          
+        var reporteDTO = new Object();
+        if(fromDate != null){
+            reporteDTO.fromDate = fromDate.setHours(0,0,0);
+        }
+        
+        if(toDate != null){
+            reporteDTO.toDate = toDate.setHours(23,59,59);
+        }
+        
+        reporteDTO.typeOfReport = type;
+        
+        fetch("http://localhost:8080/api/reportes",{
+            method:"POST",
+            headers:{
+              'Content-type':"application/json"
+            },
+            body:JSON.stringify(reporteDTO)
+        })
+        .then(response => {
+          if(!response.ok){
+            alert('error')
+          }else{
+            return response.json()
+          }
+        })
+        .then(response => {
+          console.log(response)
+          setDataGeneric(response)
+        })
 
 
         
+    }
+
+    function handleSelect(key) {
+        if (key === 1)
+        setTipo('VISITAS')
+    }
+
+    
+    return (
+        <div >
+            <h1>Reportes</h1>
+
+            <Row className="justify-content-md-center" md="auto">
+                <h2>Filtrar por Fecha</h2>
+                <Col md="auto">
+
+                    <div>
+
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                variant="inline"
+                                label="Fecha de Entrada"
+                                clearable='true'
+                                disableFuture='true'
+                                autoOk
+                                maxDate={toDate}
+                                format="dd/MM/yyyy"
+                                value={fromDate}
+                                onChange={(event) => {
+                                    setFromDate(event);
+                                    console.log('fecha entrada: ' + event)
+                                }}
+
+                            />
+                        </MuiPickersUtilsProvider>
+                    </div>
+
+
+
+                </Col>
+                <Col md="auto">
+                    <div>
+
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                variant="inline"
+                                label="Fecha de Salida"
+                                clearable
+                                minDate={fromDate}
+                                autoOk
+                                format="dd/MM/yyyy"
+                                value={toDate}
+                                onChange={setFromDate}
+                                onChange={(event) => {
+                                    setToDate(event);
+                                    console.log('fecha salida: ' + event)
+                                }}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </div>
+                </Col>
+                <div>
+
+                    <Button variant="primary" onClick={() => handleCleanDateFilter()}>Limpiar Fechas</Button>
+                </div>
+            </Row>
+
+
+
+            <div>
+                <br>
+                </br>
+                <br>
+                </br>
+                <br>
+                </br>
+            </div>
+            {/* <Button variant="primary"  onClick={() => getData()}> Buscar</Button>     */}
+            <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example" className="container d-flex justify-content-center align-items-center h-100"  onClick={() => setDataGeneric([])}> 
+                
+                               
+                <Tab eventKey='VISITAS' title="Visitas" >
+
+                    <Button variant="primary" className="container d-flex justify-content-center align-items-center" onClick={() => getData('VISITAS')}> Buscar</Button>    
+                    <br/>
+                    <MaterialTable
+                    
+                        title="Tabla de datos"
+                        columns={columnsVisitas}
+                        data={dataGeneric}
+                        options={{
+                            exportButton: true,
+                            selection: true
+                        }}
+                        localization={{
+                            pagination: {
+                                labelDisplayedRows: '{from}-{to} of {count}'
+                            },
+                            pagination: {
+                                labelRowsSelect: 'Filas'
+                            },
+                            toolbar: {
+                                nRowsSelected: '{0} fila(s) seleccionadas',
+                                searchPlaceholder: 'Buscar',
+                                exportTitle: 'Exportar',
+                                exportName: 'Exportar como',
+                                exportAriaLabel: 'Exportar como'
+                            },
+                            header: {
+                                actions: 'Acciones'
+                            },
+                            body: {
+                                emptyDataSourceMessage: 'No hay registros para mostrar',
+                                filterRow: {
+                                    filterTooltip: 'Filtrar'
+                                },
+                                editRow: {
+                                    deleteText: '¿Está seguro de eliminar este registro?'  
+                                },
+                                addTooltip: 'Añadir'
+                            }
+                        }}
+                    />
+                    <Sonnet />
+                </Tab>
+                <Tab eventKey={2} title="Visitas Vehiculos">
+
+                    <Button variant="primary" className="container d-flex justify-content-center align-items-center" onClick={() => getData('VISITASVEHICULO')}> Buscar</Button>
+                    <MaterialTable
+
+                        title="Tabla de datos"
+                        columns={columnsVehiculoVisitas}
+                        data={dataGeneric}
+                        options={{
+                            exportButton: true,
+                            selection: true
+                        }}
+                        localization={{
+                            pagination: {
+                                labelDisplayedRows: '{from}-{to} of {count}'
+                            },
+                            pagination: {
+                                labelRowsSelect: 'Filas'
+                            },
+                            toolbar: {
+                                nRowsSelected: '{0} fila(s) seleccionadas',
+                                searchPlaceholder: 'Buscar',
+                                exportTitle: 'Exportar',
+                                exportName: 'Exportar como',
+                                exportAriaLabel: 'Exportar como'
+                            },
+                            header: {
+                                actions: 'Acciones'
+                            },
+                            body: {
+                                emptyDataSourceMessage: 'No hay registros para mostrar',
+                                filterRow: {
+                                    filterTooltip: 'Filtrar'
+                                },
+                                editRow: {
+                                    deleteText: '¿Está seguro de eliminar este registro?'  
+                                },
+                                addTooltip: 'Añadir'
+                            }
+                        }}
+                    />
+                    <Sonnet />
+                </Tab>
+                <Tab eventKey="multas" title="Multas">
+                <Button variant="primary" className="container d-flex justify-content-center align-items-center" onClick={() => getData('MULTAS')}> Buscar</Button>  
+                    <MaterialTable
+
+                        title="Tabla de datos"
+                        columns={columnsMulta}
+                        data={dataGeneric}
+                        options={{
+                            exportButton: true,
+                            selection: true
+                        }}
+                        localization={{
+                            pagination: {
+                                labelDisplayedRows: '{from}-{to} of {count}'
+                            },
+                            pagination: {
+                                labelRowsSelect: 'Filas'
+                            },
+                            toolbar: {
+                                nRowsSelected: '{0} fila(s) seleccionadas',
+                                searchPlaceholder: 'Buscar',
+                                exportTitle: 'Exportar',
+                                exportName: 'Exportar como',
+                                exportAriaLabel: 'Exportar como'
+                            },
+                            header: {
+                                actions: 'Acciones'
+                            },
+                            body: {
+                                emptyDataSourceMessage: 'No hay registros para mostrar',
+                                filterRow: {
+                                    filterTooltip: 'Filtrar'
+                                },
+                                editRow: {
+                                    deleteText: '¿Está seguro de eliminar este registro?'  
+                                },
+                                addTooltip: 'Añadir'
+                            }
+                        }}
+                    />
+                    <Sonnet />
+                </Tab>
+                <Tab eventKey="expensas" title="Expensas">
+                <Button variant="primary" className="container d-flex justify-content-center align-items-center " onClick={() => getData('EXPENSAS')}> Buscar</Button>  
+                    <MaterialTable
+
+                        title="Tabla de datos"
+                        columns={columnsExpensas}
+                        data={dataGeneric}
+                        options={{
+                            exportButton: true,
+                            selection: true
+                        }}
+                        localization={{
+                            pagination: {
+                                labelDisplayedRows: '{from}-{to} of {count}'
+                            },
+                            pagination: {
+                                labelRowsSelect: 'Filas'
+                            },
+                            toolbar: {
+                                nRowsSelected: '{0} fila(s) seleccionadas',
+                                searchPlaceholder: 'Buscar',
+                                exportTitle: 'Exportar',
+                                exportName: 'Exportar como',
+                                exportAriaLabel: 'Exportar como'
+                            },
+                            header: {
+                                actions: 'Acciones'
+                            },
+                            body: {
+                                emptyDataSourceMessage: 'No hay registros para mostrar',
+                                filterRow: {
+                                    filterTooltip: 'Filtrar'
+                                },
+                                editRow: {
+                                    deleteText: '¿Está seguro de eliminar este registro?'  
+                                },
+                                addTooltip: 'Añadir'
+                            }
+                        }}
+                    />
+                    <Sonnet />
+                </Tab>
+                <Tab eventKey="sos" title="Emergencias">
+                <Button variant="primary" className="container d-flex justify-content-center align-items-center " onClick={() => getData('SOS')}> Buscar</Button> 
+                    <MaterialTable
+
+                        title="Tabla de datos"
+                        columns={columnsSos}
+                        data={dataGeneric}
+                        options={{
+                            exportButton: true,
+                            selection: true
+                        }}
+                        localization={{
+                            pagination: {
+                                labelDisplayedRows: '{from}-{to} of {count}'
+                            },
+                            pagination: {
+                                labelRowsSelect: 'Filas'
+                            },
+                            toolbar: {
+                                nRowsSelected: '{0} fila(s) seleccionadas',
+                                searchPlaceholder: 'Buscar',
+                                exportTitle: 'Exportar',
+                                exportName: 'Exportar como CSV',
+                                exportAriaLabel: 'Exportar como'
+                            },
+                            header: {
+                                actions: 'Acciones'
+                            },
+                            body: {
+                                emptyDataSourceMessage: 'No hay registros para mostrar',
+                                filterRow: {
+                                    filterTooltip: 'Filtrar'
+                                },
+                                editRow: {
+                                    deleteText: '¿Está seguro de eliminar este registro?'  
+                                },
+                                addTooltip: 'Añadir'
+                            }
+                        }}
+                    />
+                    <Sonnet />
+                </Tab>
+            </Tabs>
+
+
         </div>
-      );
+    );
 }
+
+export default Choferes;

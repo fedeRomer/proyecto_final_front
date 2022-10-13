@@ -15,6 +15,9 @@ import Home from './components/home/Home';
 
 import RegisterNewUser from './components/user/register/RegisterNewUser';
 import Choferes from './components/choferes/Choferes';
+import Camiones from './components/camiones/Camiones';
+import Alertas from './components/alertas/Alertas';
+import Tracking from './components/tracking/Tracking';
 
 import PrivateRoutes from './utils/PrivateRoutes';
 import PublicRoute from './utils/PublicRoute';
@@ -59,6 +62,9 @@ function App() {
               <Nav.Link activeclassname="active" as={Link} to="/dashboard">Panel Usuarios</Nav.Link> {/* <small style={{ color: 'red' }}>(Acceso con token unicamente)</small> */}
               <Nav.Link activeclassname="active" as={Link} to="/usuarios">Usuarios (Login)</Nav.Link>
               <Nav.Link activeclassname="active" as={Link} to="/choferes">Choferes (Login)</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/camiones">Camiones (Login)</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/alertas">Alertas (Login)</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/tracking">Tracking (Login)</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -71,6 +77,9 @@ function App() {
           <PrivateRoutes path="/dashboard" component={Dashboard} />
           <PrivateRoutes path="/usuarios" component={RegisterNewUser}/>
           <PrivateRoutes path="/choferes" component={Choferes}/>
+          <PrivateRoutes path="/camiones" component={Camiones}/>
+          <PrivateRoutes path="/alertas" component={Alertas}/>
+          <PrivateRoutes path="/tracking" component={Tracking}/>
         </Switch>
         
       </div>
