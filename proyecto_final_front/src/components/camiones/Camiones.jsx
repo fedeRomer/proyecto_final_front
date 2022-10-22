@@ -5,108 +5,60 @@ import CustomDatePicker from '../customdatepicker/CustomDatePicker';
 
 export default function Camiones(){
 
-
-    useEffect(() => {
-
-
-        fetch("http://localhost:8080/api/visitante/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setData(response)
-        })
-
-        fetch("http://localhost:8080/api/visitantevehiculo/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setDataVehiculo(response)
-        })
-        
-    }, [])
-    
-    function refreshTable() {
-
-      fetch("http://localhost:8080/api/visitante/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setData(response)
-        })
+  useEffect(() => {
+    fetch("http://localhost:8080/api/camion/all")
+    .then(response => {
+      if(!response.ok){
+        alert('error')
+      }else{
+        return response.json()
+      }
+    })
+    .then(response => {
+      console.log(response)
+      setData(response)
+    })
+}, [])
 
 
-        fetch("http://localhost:8080/api/visitantevehiculo/getall")
-        .then(response => {
-          if(!response.ok){
-            alert('error')
-          }else{
-            return response.json()
-          }
-        })
-        .then(response => {
-          console.log(response)
-          setDataVehiculo(response)
-        })
+function refreshTable() {
+
+  fetch("http://localhost:8080/api/camion/all")
+    .then(response => {
+      if(!response.ok){
+        alert('error')
+      }else{
+        return response.json()
+      }
+    })
+    .then(response => {
+      console.log(response)
+      setData(response)
+    })
 
 
-    
-  }
-
+}
   
       const [data, setData] = useState([])
       const columns = [
         { title: "ID", field: "id", editable: false },
-        { title: "Nombre", field: "nombre",initialEditValue:'', validate: rowData => rowData.nombre === '' ? { isValid: false, helperText: 'nombre no puede ser vacio' } : true,},
-        { title: "Apellido", field: "apellido",initialEditValue:'', validate: rowData => rowData.apellido === '' ? { isValid: false, helperText: 'apellido no puede ser vacio' } : true,},
-        { title: "Fecha de entrada", field: 'fechaEntrada',type:'datetime',initialEditValue: new Date(),validate: rowData => rowData.fechaEntrada > new Date(),filterComponent: (props) => <CustomDatePicker {...props} /> },
-        { title: "Fecha de salida", field: "fechaSalida",type:'datetime',validate: rowData => rowData.fechaSalida >= rowData.fechaEntrada,filterComponent: (props) => <CustomDatePicker {...props} /> },
-        { title: "DNI", field: 'dni',type: "numeric",validate: rowData =>  rowData.dni > 1000000 && rowData.dni < 99999999},
-        { title: "UF ID", field: 'unidadFuncionalId',type:'numeric', validate: rowData => rowData.unidadFuncionalId > 0 && rowData.unidadFuncionalId < 10000 },
-        {
-          title: 'Tipo',
-          field: 'tipo',initialEditValue:'Otro',
-          validate: rowData => rowData.tipo === '' ? { isValid: false, helperText: 'Tipo no puede ser vacio' } : true,
-          lookup: { 'Visita Domiciliaria': 'Visita Domiciliaria', 'Mantenimiento y Reparación': 'Mantenimiento y Reparación'
-          , 'Construcción': 'Construcción', 'Servicios': 'Servicios', 'Otro': 'Otro'},
-        },
-        //{ title: "Foto", field: 'foto' }
-      ]
-
-      const [datavehiculo, setDataVehiculo] = useState([])
-      const columnsvehiculo = [
-        { title: "ID", field: "id", editable: false },
-        { title: "Patente", field: "patente",initialEditValue:'', validate: rowData => rowData.patente === '' ? { isValid: false, helperText: 'patente no puede ser vacio' } : true,},
-        { title: "Fecha Vencimiento Poliza", field: "fechaVencimientoPoliza",type:'datetime',validate: rowData => rowData.fechaVencimientoPoliza > new Date(),helperText: 'No se pueden ingresar vehiculos con poliza vencida'  ,filterComponent: (props) => <CustomDatePicker {...props} />},
-        { title: "DNI", field: 'dniVisitanteOwner',type: "numeric", validate: rowData => rowData.dniVisitanteOwner > 1000000  && rowData.dniVisitanteOwner < 99999999},
-        { title: "ID Visitante", field: 'fkVisitanteOwner',type: "numeric", validate: rowData => rowData.fkVisitanteOwner > 0  }
+        { title: "Marca y Modelo", field: "marcaModelo",initialEditValue:'', validate: rowData => rowData.marcaModelo === '' ? { isValid: false, helperText: 'marca y modelo no puede ser vacio' } : true,},
+        { title: "Estado", field: "estado",initialEditValue:'', validate: rowData => rowData.estado === '' ? { isValid: false, helperText: 'Estado no puede ser vacio' } : true,},
+        { title: "Patente", field: 'patente',initialEditValue:'', validate: rowData => rowData.patente === '' ? { isValid: false, helperText: 'patente no puede ser vacio' } : true,},
+        { title: "Ubicación", field: 'ubicacion',
+        render: (rowData) => {
+          return <div>{rowData.ubicacion.latitud} {rowData.ubicacion.longitud}</div>;
+        },}
       ]
 
 
     
     
       return (
-        <div className="Visitas">
+        <div className="Camiones">
           <div>
           <MaterialTable
-            title="Visitas"
+            title="Camiones"
             data={data}
             columns={columns}
             actions={[
@@ -117,7 +69,7 @@ export default function Camiones(){
                   console.log(rowData)
                   if(window.confirm("¿Está seguro que quiere eliminar la visita : " + rowData.dni)){
 
-                    fetch('http://localhost:8080/api/visitante/deletevisitante',{
+                    fetch('http://localhost:8080/api/camion',{
                       method:"DELETE",
                       headers:{
                         'Content-type':"application/json"
@@ -140,8 +92,8 @@ export default function Camiones(){
             editable={{
               onRowAdd: (newRow) => new Promise((resolve, reject) => {
                 setTimeout(() => {
-                fetch('http://localhost:8080/api/visitante/addvisitante',{
-                  method:"PUT",
+                fetch('http://localhost:8080/api/camion',{
+                  method:"POST",
                   headers:{
                     'Content-type':"application/json"
                   },
@@ -164,8 +116,8 @@ export default function Camiones(){
                 setTimeout(() => {
   
                   console.log(updatedRows);
-                  fetch('http://localhost:8080/api/visitante/updatevisitante',{
-                    method:"POST",
+                  fetch('http://localhost:8080/api/camion',{
+                    method:"PUT",
                     headers:{
                       'Content-type':"application/json"
                     },
@@ -183,6 +135,17 @@ export default function Camiones(){
               })
     
             }}
+            detailPanel={rowData => {
+              return (
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13163.748201712648!2d-58.93005901862349!3d-34.42835406573307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc82cbdbf6e833%3A0x994122aeaa12657e!2sCampus%20%22Nuestra%20Se%C3%B1ora%20del%20Pilar%22%20-%20Universidad%20del%20Salvador%20(USAL)!5e0!3m2!1sen!2sar!4v1666450415100!5m2!1sen!2sar" 
+                width="100%"
+                height="315"
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">  
+                </iframe>
+              )
+            }}
+            onRowClick={(event, rowData, togglePanel) => togglePanel()}
             options={{
               actionsColumnIndex: -1, addRowPosition: "first",
               exportButton: true
@@ -220,145 +183,6 @@ export default function Camiones(){
 
          <div>
 
-          <MaterialTable
-            title="Vehiculo Visitas (Dar de alta la visita previo al vehiculo)"
-            data={datavehiculo}
-            columns={columnsvehiculo}
-            actions={[
-              {
-                icon: 'delete',
-                tooltip: 'Eliminar vehiculo',
-                onClick: (event, rowData) => {
-                  console.log(rowData)
-                  if(window.confirm("¿Está seguro que quiere eliminar el vehiculo con la patente: " + rowData.patente)){
-
-                    fetch('http://localhost:8080/api/visitantevehiculo/deletevisitantevehiculo',{
-                      method:"DELETE",
-                      headers:{
-                        'Content-type':"application/json"
-                      },
-                      body:JSON.stringify(rowData)
-                    }).then(response=>response.json())
-                    .then(response=>{
-                      alert(response.response)
-                      console.log(response)
-                      refreshTable()
-                    }).catch((error) =>{
-                      console.log(error);
-                    })
-
-                    alert('confirmado')
-                  }else{
-
-                    alert('no confirmado')
-                  }
-                    
-                  
-                  
-
-                  
-                }
-              }
-            ]}
-            editable={{
-              onRowAdd: (newRowVehiculo) => new Promise((resolve, reject) => {
-                setTimeout(() => {
-                fetch('http://localhost:8080/api/visitantevehiculo/addvisitantevehiculo',{
-                  method:"PUT",
-                  headers:{
-                    'Content-type':"application/json"
-                  },
-                  body:JSON.stringify(newRowVehiculo)
-                }).then(response=>response.json())
-                .then(response=>{
-                  alert(response.response)
-                  console.log(response)
-                  refreshTable()
-                }).catch((error) =>{
-                  console.log(error);
-                })
-                resolve()
-              }, 500)}),
-              // onRowDelete: selectedRowDelete => new Promise((resolve, reject) => {
-              //   setTimeout(() => {
-  
-              //     fetch('http://localhost:8080/api/visitantevehiculo/deletevisitantevehiculo',{
-              //       method:"DELETE",
-              //       headers:{
-              //         'Content-type':"application/json"
-              //       },
-              //       body:JSON.stringify(selectedRowDelete)
-              //     }).then(response=>response.json())
-              //     .then(response=>{
-              //       alert(response.response)
-              //       console.log(response)
-              //       refreshTable()
-              //     }).catch((error) =>{
-              //       alert('Error no controlado')
-              //       console.log(error);
-              //     })
-              //     resolve()
-              //   }, 500)
-              // }),
-              onRowUpdate:(updatedRowVehiculo,oldRowVehiculo)=>new Promise((resolve,reject)=>{
-                const index=oldRowVehiculo.tableData.id;
-                const updatedRows=[...data]
-                updatedRows[index]=updatedRowVehiculo
-                setTimeout(() => {
-  
-                  console.log(updatedRows);
-                  fetch('http://localhost:8080/api/visitantevehiculo/updatevisitantevehiculo',{
-                    method:"POST",
-                    headers:{
-                      'Content-type':"application/json"
-                    },
-                    body:JSON.stringify(updatedRowVehiculo)
-                  }).then(response=>response.json())
-                  .then(response=>{
-                    alert(response.response)
-                    console.log(response)
-                    refreshTable()
-                  }).catch((error) =>{
-                    console.log(error);
-                  })
-                  resolve()
-                }, 500)
-              })
-    
-            }}
-            options={{
-              actionsColumnIndex: -1, addRowPosition: "first",
-              exportButton: true
-            }}
-            localization={{
-              pagination: {
-                  labelDisplayedRows: '{from}-{to} of {count}'
-              },
-              pagination: {
-                  labelRowsSelect: 'Filas'
-              },
-              toolbar: {
-                  nRowsSelected: '{0} fila(s) seleccionadas',
-                  searchPlaceholder: 'Buscar',
-                  exportTitle: 'Exportar',
-                  exportName: 'Exportar como',
-                  exportAriaLabel: 'Exportar como'
-              },
-              header: {
-                  actions: 'Acciones'
-              },
-              body: {
-                  emptyDataSourceMessage: 'No hay registros para mostrar',
-                  filterRow: {
-                      filterTooltip: 'Filtrar'
-                  },
-                  editRow: {
-                      deleteText: '¿Está seguro de eliminar este registro?'  
-                  },
-                  addTooltip: 'Añadir'
-              }
-          }}
-          />
           </div> 
           
 

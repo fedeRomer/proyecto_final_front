@@ -1,9 +1,14 @@
 import React, { useState} from 'react';
 import {Form, Button} from "react-bootstrap";
 import axios from 'axios';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+
+import { app } from '../../../firebase-config';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 
 import "./Login.css";
+
+//https://www.freecodecamp.org/news/react-firebase-authentication-and-crud-operations/
 
 
 export default function Login(props) {
@@ -17,9 +22,9 @@ export default function Login(props) {
   const [idUser, setIdUser] = useState("");
   
 
-
   return (
     <div className="Login" >
+      
       <Form onSubmit={handleSubmit}>
         <Form.Group size="lg" controlId="email">
           <Form.Label>Email</Form.Label>
@@ -84,7 +89,10 @@ export default function Login(props) {
     event.preventDefault();
     setError(null);
     setLoading(true);
+    
+    const authentication = getAuth();
 
+    signInWithEmailAndPassword(authentication, username, password)
 
     axios.post('http://localhost:8080/api/login', 
     { username: username, password: password },
@@ -96,7 +104,7 @@ export default function Login(props) {
         const user = Cookies.set("user",username)
         const status = Cookies.set("logged_in",true)
         setUsuarioBack(response.data);
-        
+        //sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
         console.log(usuarioBack);
         if(response.data.usuarioId.rolId === 1){
           Cookies.set("rol", "propietario")

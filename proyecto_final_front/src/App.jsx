@@ -6,6 +6,8 @@ import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-ro
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap'
 import axios from 'axios';
 import Cookies from 'js-cookie'
+import { app } from './firebase-config';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 //import Logo from './img/icons/police.png'
 
 
@@ -60,11 +62,11 @@ function App() {
               <Nav.Link as={Link} to="/home">Inicio</Nav.Link>
               <Nav.Link as={Link} to="/login">Login</Nav.Link> {/* <small style={{ color: 'red' }}>(Acceso sin token)</small> */}
               <Nav.Link activeclassname="active" as={Link} to="/dashboard">Panel Usuarios</Nav.Link> {/* <small style={{ color: 'red' }}>(Acceso con token unicamente)</small> */}
-              <Nav.Link activeclassname="active" as={Link} to="/usuarios">Usuarios (Login)</Nav.Link>
-              <Nav.Link activeclassname="active" as={Link} to="/choferes">Choferes (Login)</Nav.Link>
-              <Nav.Link activeclassname="active" as={Link} to="/camiones">Camiones (Login)</Nav.Link>
-              <Nav.Link activeclassname="active" as={Link} to="/alertas">Alertas (Login)</Nav.Link>
-              <Nav.Link activeclassname="active" as={Link} to="/tracking">Tracking (Login)</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/usuarios">Usuarios</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/choferes">Choferes</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/camiones">Camiones</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/alertas">Alertas</Nav.Link>
+              <Nav.Link activeclassname="active" as={Link} to="/tracking">Tracking</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
